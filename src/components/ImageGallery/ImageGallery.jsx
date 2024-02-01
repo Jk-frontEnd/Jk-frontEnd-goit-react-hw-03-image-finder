@@ -10,18 +10,24 @@ export class ImageGallery extends Component {
     images: [],
     page: 1,
     isLoading: false,
+    totalImages: 0,
   };
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.query !== this.props.query) {
-      this.setState({ images: [], page: 1 }, () => this.fetchImages());
+      this.setState({ images: [], page: 1, totalImages: 0 }, () => this.fetchImages());
     }
   }
 
   fetchImages = () => {
     const { query, perPage } = this.props;
-    const { page } = this.state;
-    const apiKey = '41687911-62b9e6d772891b12bf67d3c73'; 
+    const { page, images, totalImages } = this.state;
+    const apiKey = '41687911-62b9e6d772891b12bf67d3c73';
+
+    // If there are no more images to fetch, do nothing
+    if (totalImages > 0 && images.length >= totalImages) {
+      return;
+    }
 
     this.setState({ isLoading: true });
 
@@ -33,6 +39,7 @@ export class ImageGallery extends Component {
         this.setState((prevState) => ({
           images: [...prevState.images, ...data.hits],
           page: prevState.page + 1,
+          totalImages: data.total,
           isLoading: false,
         }));
       })
@@ -43,7 +50,7 @@ export class ImageGallery extends Component {
   };
 
   render() {
-    const { images, isLoading } = this.state;
+    const { images, isLoading, totalImages } = this.state;
     const { query } = this.props;
 
     return (
@@ -56,7 +63,10 @@ export class ImageGallery extends Component {
 
         {isLoading && <Loader />}
 
-        {images.length > 0 && !isLoading && <Button onClick={this.fetchImages} />}
+        {images.length > 0 && !isLoading && totalImages > images.length && (
+          <Button onClick={this.fetchImages}>Load more</Button>
+        )}
+        
         {query && images.length === 0 && !isLoading && (
           <p className={css.Message}>
             Sorry! No images were found. Try another keyword for what you are seeking! <br />😊
