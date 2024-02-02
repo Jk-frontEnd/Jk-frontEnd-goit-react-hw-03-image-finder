@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-
 import { ImageGalleryItem } from '../ImageGalleryItem/ImageGalleryItem';
 import { Button } from '../Button/Button';
 import { Loader } from '../Loader/Loader';
@@ -13,18 +12,17 @@ export class ImageGallery extends Component {
     totalImages: 0,
   };
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps) {
     if (prevProps.query !== this.props.query) {
       this.setState({ images: [], page: 1, totalImages: 0 }, () => this.fetchImages());
     }
   }
 
-  fetchImages = () => {
+  fetchImages = (page = this.state.page) => {
     const { query, perPage } = this.props;
-    const { page, images, totalImages } = this.state;
+    const { images, totalImages } = this.state;
     const apiKey = '41687911-62b9e6d772891b12bf67d3c73';
 
-    // If there are no more images to fetch, do nothing
     if (totalImages > 0 && images.length >= totalImages) {
       return;
     }
@@ -38,7 +36,7 @@ export class ImageGallery extends Component {
       .then((data) => {
         this.setState((prevState) => ({
           images: [...prevState.images, ...data.hits],
-          page: prevState.page + 1,
+          page: page + 1,
           totalImages: data.total,
           isLoading: false,
         }));
@@ -47,6 +45,11 @@ export class ImageGallery extends Component {
         console.error('Error fetching images:', error);
         this.setState({ isLoading: false });
       });
+  };
+
+  handleLoadMore = () => {
+    const { page } = this.state;
+    this.setState({ page: page + 1 }, () => this.fetchImages());
   };
 
   render() {
@@ -64,9 +67,9 @@ export class ImageGallery extends Component {
         {isLoading && <Loader />}
 
         {images.length > 0 && !isLoading && totalImages > images.length && (
-          <Button onClick={this.fetchImages}>Load more</Button>
+          <Button onClick={this.handleLoadMore}>Load more</Button>
         )}
-        
+
         {query && images.length === 0 && !isLoading && (
           <p className={css.Message}>
             Sorry! No images were found. Try another keyword for what you are seeking! <br />😊
