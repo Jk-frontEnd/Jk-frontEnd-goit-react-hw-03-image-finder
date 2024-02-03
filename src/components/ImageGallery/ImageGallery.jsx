@@ -18,6 +18,11 @@ export class ImageGallery extends Component {
     }
   }
 
+  handleLoadMore = () => {
+    this.setState((prevState) => ({ page: prevState.page + 1 }));
+  };
+
+
   fetchImages = (page = this.state.page) => {
     const { query, perPage } = this.props;
     const { images, totalImages } = this.state;
@@ -45,11 +50,6 @@ export class ImageGallery extends Component {
         console.error('Error fetching images:', error);
         this.setState({ isLoading: false });
       });
-  };
-
-  handleLoadMore = () => {
-    const { page } = this.state;
-    this.setState({ page: page + 1 }, () => this.fetchImages());
   };
 
   render() {
