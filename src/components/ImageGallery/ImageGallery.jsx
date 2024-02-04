@@ -58,11 +58,12 @@ export class ImageGallery extends Component {
 
     return (
       <div>
-        <ul className={css.ImageGallery}>
-          {images.map((image) => (
-            <ImageGalleryItem key={image.id} imageUrl={image.webformatURL} />
-          ))}
-        </ul>
+        {images.length > 0 && !isLoading && totalImages > images.length && (
+          <ul className={css.ImageGallery}>
+            {images.map((image) => (
+              <ImageGalleryItem key={image.id} imageUrl={image.webformatURL} />
+            ))}
+          </ul>)}
 
         {isLoading && <Loader />}
 

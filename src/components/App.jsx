@@ -16,9 +16,7 @@ export class App extends Component {
     return (
       <div>
         <Searchbar onSubmit={this.handleSearch} />
-        {this.state.query && (
-          <ImageGallery query={this.state.query} />
-        )}
+        <ImageGallery query={this.state.query} />
       </div>
     );
   }
