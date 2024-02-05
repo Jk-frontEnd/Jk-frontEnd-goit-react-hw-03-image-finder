@@ -12,23 +12,21 @@ export class ImageGallery extends Component {
     totalImages: 0,
   };
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     if (prevProps.query !== this.props.query) {
       this.setState({ images: [], page: 1, totalImages: 0 }, () => this.fetchImages());
+    } else if (prevState.page !== this.state.page) {
+      this.fetchImages();
     }
-
-    this.handleLoadMore = () => {
-      this.setState((prevState) => ({ page: prevState.page + 1 }), () => {
-        this.fetchImages();
-      });
-    };
-
   }
 
+  handleLoadMore = () => {
+    this.setState((prevState) => ({ page: prevState.page + 1 }));
+  };
 
-  fetchImages = (page = this.state.page) => {
+  fetchImages = () => {
     const { query, perPage } = this.props;
-    const { images, totalImages } = this.state;
+    const { images, totalImages, page } = this.state;
     const apiKey = '41687911-62b9e6d772891b12bf67d3c73';
 
     if (totalImages > 0 && images.length >= totalImages) {
@@ -44,7 +42,6 @@ export class ImageGallery extends Component {
       .then((data) => {
         this.setState((prevState) => ({
           images: [...prevState.images, ...data.hits],
-          page: page + 1,
           totalImages: data.total,
           isLoading: false,
         }));
@@ -61,11 +58,13 @@ export class ImageGallery extends Component {
 
     return (
       <div>
-          {images.length > 0 &&(<ul className={css.ImageGallery}>
+        {images.length > 0 && (
+          <ul className={css.ImageGallery}>
             {images.map((image) => (
               <ImageGalleryItem key={image.id} imageUrl={image.webformatURL} />
             ))}
-          </ul>)}
+          </ul>
+        )}
 
         {isLoading && <Loader />}
 
