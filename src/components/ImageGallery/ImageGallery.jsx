@@ -16,11 +16,14 @@ export class ImageGallery extends Component {
     if (prevProps.query !== this.props.query) {
       this.setState({ images: [], page: 1, totalImages: 0 }, () => this.fetchImages());
     }
-  }
 
-  handleLoadMore = () => {
-    this.setState((prevState) => ({ page: prevState.page + 1 }));
-  };
+    this.handleLoadMore = () => {
+      this.setState((prevState) => ({ page: prevState.page + 1 }), () => {
+        this.fetchImages();
+      });
+    };
+
+  }
 
 
   fetchImages = (page = this.state.page) => {
