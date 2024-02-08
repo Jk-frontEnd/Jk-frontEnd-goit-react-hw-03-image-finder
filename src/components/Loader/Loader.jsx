@@ -4,6 +4,7 @@ import css from './Loader.module.css';
 
 export const Loader = () => {
     return (
+        <div className={css.loaderBox}>
         <div className={css.DNABox}>
         <DNA
             visible={true}
@@ -15,6 +16,6 @@ export const Loader = () => {
             position="absolute"
             top="280px"
             />
-        </div>
+        </div></div>
     )
 }
