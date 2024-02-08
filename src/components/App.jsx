@@ -1,24 +1,70 @@
-import React from "react"; 
-import { Component } from "react";
+import React, { Component } from "react";
 import { Searchbar } from "./Searchbar/Searchbar";
 import { ImageGallery } from './ImageGallery/ImageGallery';
 
 export class App extends Component {
-  state = {
-    query: '',
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      query: '',
+      images: [],
+      page: 1,
+      perPage: 12,
+      isLoading: false,
+      totalImages: 0,
+    };
+  }
 
   handleSearch = (query) => {
-    this.setState({ query });
+    this.setState({ query, images: [], page: 1, totalImages: 0 }, () => this.fetchImages());
+  };
+
+  handleLoadMore = () => {
+    this.setState((prevState) => ({
+      page: prevState.page + 1
+    }), () => this.fetchImages());
+  };
+
+  fetchImages = () => {
+    const { query, page } = this.state;
+    const apiKey = '41687911-62b9e6d772891b12bf67d3c73';
+    const apiUrl = `https://pixabay.com/api/?q=${query}&page=${page}&key=${apiKey}&image_type=photo&orientation=horizontal&per_page=6`;
+
+    
+    this.setState({ isLoading: true });
+
+    fetch(apiUrl)
+      .then((response) => response.json())
+      .then((data) => {
+        this.setState((prevState) => ({
+          images: [...prevState.images, ...data.hits],
+          totalImages: data.total,
+          isLoading: false,
+        }));
+      })
+      .catch((error) => {
+        console.error('Error fetching images:', error);
+        this.setState({ isLoading: false });
+      });
   };
 
   render() {
+    const { perPage, query, images, isLoading, totalImages, page } = this.state;
+
     return (
       <div>
         <Searchbar onSubmit={this.handleSearch} />
-        <ImageGallery query={this.state.query} />
+        <ImageGallery
+          query={query}
+          page={page}
+          perPage={perPage}
+          images={images}
+          isLoading={isLoading}
+          totalImages={totalImages}
+          onLoadMore={this.handleLoadMore}
+        />
       </div>
     );
   }
 }
-

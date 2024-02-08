@@ -5,58 +5,32 @@ import { Loader } from '../Loader/Loader';
 import css from './ImageGallery.module.css';
 
 export class ImageGallery extends Component {
-  state = {
-    images: [],
-    page: 1,
-    isLoading: false,
-    totalImages: 0,
-  };
+  constructor(props) {
+    super(props);
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.query !== this.props.query) {
-      this.setState({ images: [], page: 1, totalImages: 0 }, () => this.fetchImages());
-    } else if (prevState.page !== this.state.page) {
-      this.fetchImages();
-    }
+    this.state = {
+      page: 1,
+    };
   }
 
   handleLoadMore = () => {
-    this.setState((prevState) => ({ page: prevState.page + 1 }));
+    this.setState((prevState) => ({
+      page: prevState.page + 1
+    }), () => this.props.onLoadMore());
   };
 
-  fetchImages = () => {
-    const { query, perPage } = this.props;
-    const { images, totalImages, page } = this.state;
-    const apiKey = '41687911-62b9e6d772891b12bf67d3c73';
 
-    if (totalImages > 0 && images.length >= totalImages) {
-      return;
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.query !== this.props.query || prevState.page !== this.state.page) {
+      this.props.onLoadMore();
     }
-
-    this.setState({ isLoading: true });
-
-    const apiUrl = `https://pixabay.com/api/?q=${query}&page=${page}&key=${apiKey}&image_type=photo&orientation=horizontal&per_page=${perPage}`;
-
-    fetch(apiUrl)
-      .then((response) => response.json())
-      .then((data) => {
-        this.setState((prevState) => ({
-          images: [...prevState.images, ...data.hits],
-          totalImages: data.total,
-          isLoading: false,
-        }));
-      })
-      .catch((error) => {
-        console.error('Error fetching images:', error);
-        this.setState({ isLoading: false });
-      });
-  };
+  }
 
   render() {
-    const { images, isLoading, totalImages } = this.state;
+    const { images, isLoading, totalImages } = this.props;
     const { query } = this.props;
 
-    return (
+      return (
       <div>
         {images.length > 0 && (
           <ul className={css.ImageGallery}>
