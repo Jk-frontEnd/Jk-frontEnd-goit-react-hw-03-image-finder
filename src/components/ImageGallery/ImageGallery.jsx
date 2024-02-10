@@ -5,32 +5,15 @@ import { Loader } from '../Loader/Loader';
 import css from './ImageGallery.module.css';
 
 export class ImageGallery extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      page: 1,
-    };
-  }
-
   handleLoadMore = () => {
-    this.setState((prevState) => ({
-      page: prevState.page + 1
-    }), () => this.props.onLoadMore());
+    this.props.onLoadMore();
   };
-
-
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.query !== this.props.query || prevState.page !== this.state.page) {
-      this.props.onLoadMore();
-    }
-  }
 
   render() {
     const { images, isLoading, totalImages } = this.props;
     const { query } = this.props;
 
-      return (
+    return (
       <div>
         {images.length > 0 && (
           <ul className={css.ImageGallery}>

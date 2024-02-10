@@ -17,7 +17,9 @@ export class App extends Component {
   }
 
   handleSearch = (query) => {
-    this.setState({ query, images: [], page: 1, totalImages: 0 }, () => this.fetchImages());
+    this.setState({ query, images: [], page: 1, totalImages: 0 }, () => {
+      this.fetchImages();
+    });
   };
 
   handleLoadMore = () => {
@@ -27,11 +29,10 @@ export class App extends Component {
   };
 
   fetchImages = () => {
-    const { query, page } = this.state;
+    const { query, page, perPage } = this.state;
     const apiKey = '41687911-62b9e6d772891b12bf67d3c73';
-    const apiUrl = `https://pixabay.com/api/?q=${query}&page=${page}&key=${apiKey}&image_type=photo&orientation=horizontal&per_page=6`;
+    const apiUrl = `https://pixabay.com/api/?q=${query}&page=${page}&key=${apiKey}&image_type=photo&orientation=horizontal&per_page=${perPage}`;
 
-    
     this.setState({ isLoading: true });
 
     fetch(apiUrl)
