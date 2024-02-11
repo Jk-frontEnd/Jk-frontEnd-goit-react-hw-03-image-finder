@@ -16,16 +16,21 @@ export class App extends Component {
     };
   }
 
-  handleSearch = (query) => {
-    this.setState({ query, images: [], page: 1, totalImages: 0 }, () => {
+  componentDidUpdate(prevProps, prevState) {
+    // Check if the query or page has changed
+    if (this.state.query !== prevState.query || this.state.page !== prevState.page) {
       this.fetchImages();
-    });
+    }
+  }
+
+  handleSearch = (query) => {
+    this.setState({ query, images: [], page: 1, totalImages: 0 });
   };
 
   handleLoadMore = () => {
     this.setState((prevState) => ({
       page: prevState.page + 1
-    }), () => this.fetchImages());
+    }));
   };
 
   fetchImages = () => {
