@@ -17,7 +17,6 @@ export class App extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    // Check if the query or page has changed
     if (this.state.query !== prevState.query || this.state.page !== prevState.page) {
       this.fetchImages();
     }
